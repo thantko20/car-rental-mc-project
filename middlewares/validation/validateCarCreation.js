@@ -1,8 +1,9 @@
 const { body } = require('express-validator');
 const CarModel = require('../../models/carModel');
 const generateValidator = require('../../helpers/generateValidator');
+const z = require('zod');
 
-const schemas = [
+const schema = [
   body('color')
     .trim()
     .notEmpty()
@@ -34,6 +35,6 @@ const schemas = [
   body('image').notEmpty().withMessage('Image URL must be provided.'),
 ];
 
-const validateCarCreation = generateValidator(schemas);
+const validateCarCreation = generateValidator(schema);
 
 module.exports = validateCarCreation;

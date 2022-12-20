@@ -13,10 +13,14 @@ const userSchema = new Schema({
   rentals: [{ type: Schema.Types.ObjectId, ref: 'Rental' }],
 });
 
-userSchema.pre('save', async function (next) {
-  if (this.isModified('password')) next();
+userSchema.pre('validate', async function (next) {
+  // if (this.isModified('password')) next();
+  console.log('Hey');
 
-  const { password, salt } = await genHashAndSalt(this.password, SALT_ROUNDS);
+  const { password, salt } = await genHashAndSalt(
+    this.password,
+    parseInt(SALT_ROUNDS, 10),
+  );
   this.password = password;
   this.salt = salt;
   next();

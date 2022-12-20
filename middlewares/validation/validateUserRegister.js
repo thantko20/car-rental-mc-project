@@ -1,37 +1,66 @@
-const { body } = require('express-validator');
+// const { body } = require('express-validator');
+const z = require('zod');
 const generateValidator = require('../../helpers/generateValidator');
 const UserModel = require('../../models/userModel');
 
-const schemas = [
-  body('name')
-    .isAlpha('en-US', { ignore: ' ' })
-    .withMessage('Name must have alphabets only')
+// const schemas = [
+//   body('name')
+//     .isAlpha('en-US', { ignore: ' ' })
+//     .withMessage('Name must have alphabets only')
+//     .trim()
+//     .isLength({ min: 1 }),
+//   body('email')
+//     .isEmail()
+//     .withMessage('Invalid Email')
+//     .custom(async (value) => {
+//       const user = await UserModel.findOne({ email: value });
+//       if (user) {
+//         return Promise.reject('Email already exists.');
+//       }
+
+//       return true;
+//     }),
+//   body('phoneNumber')
+//     .isAlphanumeric()
+//     .withMessage('Invalid Phone Number')
+//     .isLength({ min: 4, max: 12 })
+//     .withMessage(
+//       'Phone Number must have at least 4 characters and maximum of 12 characters',
+//     ),
+//   body('role').isIn(['CUSTOMER', 'ADMIN']).withMessage('Invalid Role'),
+//   body('password')
+//     .isLength({ min: 8, max: 16 })
+//     .withMessage('Password Length should be between 8 and 16 characters.'),
+// ];
+const schema = z.object({
+  name: z
+    .string()
     .trim()
-    .isLength({ min: 1 }),
-  body('email')
-    .isEmail()
-    .withMessage('Invalid Email')
-    .custom(async (value) => {
+    .regex(/^[a-zA-Z ]*$/, 'Must only contains letters.'),
+  email: z
+    .string()
+    .email('Invalid Email')
+    .refine(async (value) => {
       const user = await UserModel.findOne({ email: value });
-      if (user) {
-        return Promise.reject('Email already exists.');
-      }
+      return !user;
+    }, 'Email already exists.'),
+  phoneNumber: z
+    .string()
+    .min(8, 'Phone Number must have at least 8 characters.')
+    .regex(/^[a-zA-Z0-9]*$/),
+  role: z.enum(['ADMIN', 'CUSTOMER'], {
+    invalid_type_error: 'Invalid Role.',
+  }),
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .max(16, 'Password must be at most 16 characters.'),
+});
+const optionalSchema = schema.partial();
 
-      return true;
-    }),
-  body('phoneNumber')
-    .isAlphanumeric()
-    .withMessage('Invalid Phone Number')
-    .isLength({ min: 4, max: 12 })
-    .withMessage(
-      'Phone Number must have at least 4 characters and maximum of 12 characters',
-    ),
-  body('role').isIn(['CUSTOMER', 'ADMIN']).withMessage('Invalid Role'),
-  body('password')
-    .isLength({ min: 8, max: 16 })
-    .withMessage('Password Length should be between 8 and 16 characters.'),
-];
+const validateUserRegister = generateValidator(schema);
 
-const validateUserRegister = generateValidator(schemas);
-
-module.exports = validateUserRegister;
+module.exports = {
+  validateUserRegister,
+  optionalSchema,
+};

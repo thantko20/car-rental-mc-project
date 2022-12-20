@@ -1,28 +1,13 @@
-const { validationResult } = require('express-validator');
-const withAsyncCatcher = require('./withAsyncCatcher');
 const ApiError = require('./apiError');
+const withAsyncCatcher = require('./withAsyncCatcher');
 
-function formatErrors(errors) {
-  const formattedErrors = {};
-  errors.forEach((error) => (formattedErrors[error.param] = error.msg));
-  return formattedErrors;
-}
-
-const generateValidator = (schemas) => {
+const generateValidator = (schema) => {
   return withAsyncCatcher(async (req, res, next) => {
-    await Promise.all(schemas.map((schema) => schema.run(req)));
-
-    const results = validationResult(req);
-
-    if (results.isEmpty()) {
-      return next();
+    const result = await schema.safeParseAsync(req.body);
+    if (!result.success) {
+      return next(ApiError.validationError('Validation Error', result.error));
     }
-
-    const errors = formatErrors(results.array());
-
-    const newError = ApiError.validationError('Validation Error', errors);
-
-    next(newError);
+    next();
   });
 };
 
