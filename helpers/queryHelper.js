@@ -40,7 +40,8 @@ class QueryHelper {
 
   paginate() {
     const page = this.queryObject.page || 1;
-    this.query = this.query.skip(DOCS_LIMIT * (page - 1)).limit(DOCS_LIMIT);
+    const limit = this.queryObject.limit || DOCS_LIMIT;
+    this.query = this.query.skip(limit * (page - 1)).limit(limit);
   }
 }
 
