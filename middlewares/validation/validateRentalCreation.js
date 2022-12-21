@@ -1,22 +1,26 @@
-const { body } = require('express-validator');
-const CarModel = require('../../models/carModel');
 const generateValidator = require('../../helpers/generateValidator');
-// const RentalModel = require('../../models/rentalModel');
+const z = require('zod');
 
-const schema = [
-  body('startDate').isDate().withMessage('Must be a valid date').optional(),
-  body('endDate').isDate().withMessage('Must be a valid date'),
-  body('car').custom(async (value) => {
-    const car = await CarModel.findById(value);
-    if (!car || car.status !== 'available') {
-      return Promise.reject('Car is not available.');
-    }
-
-    return true;
+const schema = z.object({
+  startDate: z.date({ invalid_type_error: 'Invalid Date' }).optional(),
+  endDate: z.coerce.date({
+    required_error: 'End Date is required',
+    invalid_type_error: 'Invalid Date',
   }),
-  body('totalAmount').isNumeric().withMessage('Amount should be number.'),
-];
+  car: z.string({
+    required_error: 'Car is required',
+    invalid_type_error: 'Car ID must be string.',
+  }),
+  totalAmount: z.coerce.number({
+    required_error: 'Must not be empty',
+    invalid_type_error: 'Must be a number',
+  }),
+});
+const optionalRentalSchema = schema.optional();
 
 const validateRentalCreation = generateValidator(schema);
 
-module.exports = validateRentalCreation;
+module.exports = {
+  validateRentalCreation,
+  optionalRentalSchema,
+};

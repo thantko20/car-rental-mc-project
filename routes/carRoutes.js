@@ -6,7 +6,9 @@ const {
   updateCar,
   deleteCar,
 } = require('../controllers/carController');
-const validateCarCreation = require('../middlewares/validation/validateCarCreation');
+const {
+  validateCarCreation,
+} = require('../middlewares/validation/validateCarCreation');
 const validateCarUpdate = require('../middlewares/validation/validateCarUpdate');
 const uploadImage = require('../middlewares/uploadImage');
 const verifyAdmin = require('../middlewares/verifyAdmin');
@@ -18,8 +20,8 @@ router
   .post(
     verifyAdmin,
     multerUpload.single('car_image'),
-    uploadImage,
     validateCarCreation,
+    uploadImage,
     createACar,
   );
 
@@ -29,8 +31,8 @@ router
   .patch(
     verifyAdmin,
     multerUpload.single('car_image'),
-    uploadImage,
     validateCarUpdate,
+    uploadImage,
     updateCar,
   )
   .delete(verifyAdmin, deleteCar);

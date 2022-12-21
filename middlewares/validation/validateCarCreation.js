@@ -1,40 +1,41 @@
-const { body } = require('express-validator');
 const CarModel = require('../../models/carModel');
 const generateValidator = require('../../helpers/generateValidator');
 const z = require('zod');
 
-const schema = [
-  body('color')
+const schema = z.object({
+  color: z
+    .string()
     .trim()
-    .notEmpty()
-    .withMessage('Color must be provided')
-    .isAlpha(),
-  body('licenseNumber')
+    .regex(/^[a-zA-Z]*$/, 'Color must be alphabets.'),
+  licenseNumber: z
+    .string()
     .trim()
-    .notEmpty()
-    .withMessage('License Number must not be empty')
-    .custom(async (value) => {
+    .refine(async (value) => {
       const car = await CarModel.findOne({ licenseNumber: value });
-      if (car) {
-        return Promise.reject('License Number already exists.');
-      }
-      return true;
-    }),
-  body('brand')
+      return !car;
+    }, 'License Number already exists.'),
+  brand: z
+    .string()
     .trim()
-    .notEmpty()
-    .withMessage('Brand must be provided')
-    .isAlphanumeric('en-US', { ignore: ' ' }),
-  body('yearOfProduction').isNumeric().withMessage('Year must be in number.'),
-  body('model')
+    .regex(/^[a-zA-Z ]*$/, 'Brand must be alphabets.'),
+  yearOfProduction: z.coerce.number({
+    required_error: 'Year of Production is required',
+    invalid_type_error: 'Must be a number.',
+  }),
+  model: z
+    .string()
     .trim()
-    .notEmpty()
-    .withMessage('Model must be provided')
-    .isAlphanumeric('en-US', { ignore: ' ' }),
-
-  body('image').notEmpty().withMessage('Image URL must be provided.'),
-];
+    .regex(/^[a-zA-Z0-9 ]*$/, 'Model must be alphanumeric'),
+  basePrice: z.coerce.number({
+    required_error: 'Base Price is required.',
+    invalid_type_error: 'Must be a number',
+  }),
+});
+const optionalCarSchema = schema.optional();
 
 const validateCarCreation = generateValidator(schema);
 
-module.exports = validateCarCreation;
+module.exports = {
+  validateCarCreation,
+  optionalCarSchema,
+};

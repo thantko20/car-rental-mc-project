@@ -1,6 +1,5 @@
 const ApiError = require('../helpers/apiError');
 const { NODE_ENV } = require('../constants');
-const formatErrors = require('../helpers/formatErrors');
 
 const errorHandler = (error, req, res, next) => {
   if (NODE_ENV === 'development') {
@@ -12,7 +11,7 @@ const errorHandler = (error, req, res, next) => {
       status: 'failure',
       message: error.message,
       errorType: error.errorType,
-      errors: formatErrors(error.errors),
+      errors: error.errors,
       stack: NODE_ENV === 'development' ? error.stack : undefined,
     });
 

@@ -6,7 +6,9 @@ const {
   updateRental,
   deleteRental,
 } = require('../controllers/rentalController');
-const validateRentalCreation = require('../middlewares/validation/validateRentalCreation');
+const {
+  validateRentalCreation,
+} = require('../middlewares/validation/validateRentalCreation');
 const validateRentalUpdate = require('../middlewares/validation/validateRentalUpdate');
 const verifyToken = require('../middlewares/verifyToken');
 const verifyAdmin = require('../middlewares/verifyAdmin');
