@@ -13,7 +13,7 @@ exports.sanitizeUserCredentials = withAsyncCatcher(async (req, res, next) => {
 exports.getUsers = withAsyncCatcher(async (req, res, next) => {
   const queryHelper = new QueryHelper(UserModel.find(), req.query);
 
-  queryHelper.filter().limitFields().sort();
+  queryHelper.filter().limitFields().sort().paginate();
 
   const users = await queryHelper.query;
 

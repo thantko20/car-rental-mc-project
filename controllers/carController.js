@@ -6,7 +6,7 @@ const QueryHelper = require('../helpers/queryHelper');
 exports.getCars = withAsyncCatcher(async (req, res, next) => {
   const queryHelper = new QueryHelper(CarModel.find(), req.query);
 
-  queryHelper.filter().limitFields().sort();
+  queryHelper.filter().limitFields().sort().paginate();
 
   const cars = await queryHelper.query;
 
