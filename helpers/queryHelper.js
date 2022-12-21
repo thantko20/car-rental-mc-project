@@ -1,4 +1,5 @@
 const EXLCUDED_FIELDS = Object.freeze(['page', 'sort', 'limit', 'fields']);
+const DOCS_LIMIT = 20;
 
 class QueryHelper {
   constructor(query, queryObject) {
@@ -35,6 +36,11 @@ class QueryHelper {
     if (this.queryObject.sort) {
       this.query = this.query.sort(this.queryObject.sort);
     }
+  }
+
+  paginate() {
+    const page = this.queryObject.page || 1;
+    this.query = this.query.skip(DOCS_LIMIT * (page - 1)).limit(DOCS_LIMIT);
   }
 }
 
