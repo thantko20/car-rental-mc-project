@@ -2,11 +2,16 @@ const jwt = require('jsonwebtoken');
 const ApiError = require('../helpers/apiError');
 const comparePasswords = require('../helpers/comparePasswords');
 const withAsyncCatcher = require('../helpers/withAsyncCatcher');
+const genHashAndSalt = require('../helpers/genHashAndSalt');
 const UserModel = require('../models/userModel');
-const { JWT_SECRET } = require('../constants');
+const { JWT_SECRET, SALT_ROUNDS } = require('../constants');
 
 exports.register = withAsyncCatcher(async (req, res, next) => {
-  const user = new UserModel(req.body);
+  const { password, salt } = await genHashAndSalt(
+    req.body.password,
+    parseInt(SALT_ROUNDS, 10),
+  );
+  const user = new UserModel({ ...req.body, password, salt });
   await user.save();
 
   res.status(201).json({

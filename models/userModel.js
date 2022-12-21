@@ -13,14 +13,14 @@ const userSchema = new Schema({
   rentals: [{ type: Schema.Types.ObjectId, ref: 'Rental' }],
 });
 
-userSchema.pre('save', async function (next) {
-  if (this.isModified('password')) next();
+// userSchema.pre('validate', async function (next) {
+//   if (this.isModified('password')) next();
 
-  const { password, salt } = await genHashAndSalt(this.password, SALT_ROUNDS);
-  this.password = password;
-  this.salt = salt;
-  next();
-});
+//   const { password, salt } = await genHashAndSalt(this.password, SALT_ROUNDS);
+//   this.password = password;
+//   this.salt = salt;
+//   next();
+// });
 
 const UserModel = mongoose.model('User', userSchema);
 
