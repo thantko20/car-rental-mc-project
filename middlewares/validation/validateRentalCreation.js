@@ -16,7 +16,7 @@ const schema = z.object({
     invalid_type_error: 'Must be a number',
   }),
 });
-const optionalRentalSchema = schema.optional();
+const optionalRentalSchema = schema.partial();
 
 const validateRentalCreation = generateValidator(schema);
 

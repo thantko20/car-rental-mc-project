@@ -31,7 +31,7 @@ const schema = z.object({
     invalid_type_error: 'Must be a number',
   }),
 });
-const optionalCarSchema = schema.optional();
+const optionalCarSchema = schema.partial();
 
 const validateCarCreation = generateValidator(schema);
 
