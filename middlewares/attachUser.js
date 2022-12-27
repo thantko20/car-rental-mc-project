@@ -1,11 +1,11 @@
 const withAsyncCatcher = require('../helpers/withAsyncCatcher');
-const UserModel = require('../models/userModel');
 const ApiError = require('../helpers/apiError');
+const userModel = require('../container').resolve('userModel');
 
 const attachUser = withAsyncCatcher(async (req, res, next) => {
   const decodedToken = req.token;
 
-  const user = await UserModel.findById(decodedToken.userId);
+  const user = await userModel.findById(decodedToken.userId);
 
   if (!user) {
     return next(ApiError.notAuthenticated('Invalid User'));

@@ -4,12 +4,6 @@ const withAsyncCatcher = require('../helpers/withAsyncCatcher');
 const UserModel = require('../models/userModel');
 const ApiError = require('../helpers/apiError');
 
-exports.sanitizeUserCredentials = withAsyncCatcher(async (req, res, next) => {
-  req.query.fields =
-    req.query.fields && req.query.fields.replace(/\b(password|salt)\b/g, '');
-  next();
-});
-
 exports.getUsers = withAsyncCatcher(async (req, res, next) => {
   const queryHelper = new QueryHelper(UserModel.find(), req.query);
 

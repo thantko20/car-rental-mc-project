@@ -11,8 +11,8 @@ const { NODE_ENV } = require('./constants');
 const ApiError = require('./helpers/apiError');
 const errorHandler = require('./middlewares/errorHandler');
 const carRoutes = require('./routes/carRoutes');
-const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
+const authRoutes = require('./routes/auth.routes');
+const userRoutes = require('./routes/user.routes');
 const rentalRoutes = require('./routes/rentalRoutes');
 
 const app = express();
