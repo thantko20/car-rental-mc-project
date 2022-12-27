@@ -7,10 +7,7 @@ const CarModel = require('../models/carModel');
 exports.getRentals = withAsyncCatcher(async (req, res, next) => {
   const queryHelper = new QueryHelper(RentalModel.find(), req.query);
   queryHelper.filter().limitFields().sort().paginate();
-  const rentals = await queryHelper.query
-    .populate('lessee', '-password -salt')
-    .populate('car')
-    .exec();
+  const rentals = await queryHelper.query;
 
   res.json({
     status: 'success',
@@ -21,10 +18,8 @@ exports.getRentals = withAsyncCatcher(async (req, res, next) => {
 });
 
 exports.getRental = withAsyncCatcher(async (req, res, next) => {
-  const rental = await RentalModel.findById(req.params.id)
-    .populate('lessee', '-password -salt')
-    .populate('car')
-    .exec();
+  const rental = await RentalModel.findById(req.params.id);
+
   if (!rental) {
     return next(ApiError.badRequest('Invalid Rental ID'));
   }

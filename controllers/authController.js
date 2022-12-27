@@ -6,7 +6,12 @@ const comparePasswords = require('../helpers/comparePasswords');
 const withAsyncCatcher = require('../helpers/withAsyncCatcher');
 const excludeFields = require('../helpers/excludeFields');
 const UserModel = require('../models/userModel');
-const { JWT_SECRET, JWT_COOKIE_EXPIRES, NODE_ENV } = require('../constants');
+const {
+  JWT_SECRET,
+  JWT_COOKIE_EXPIRES,
+  NODE_ENV,
+  JWT_EXPIRES,
+} = require('../constants');
 const sendEmail = require('../helpers/emailHandler');
 
 exports.register = withAsyncCatcher(async (req, res, next) => {
@@ -123,11 +128,16 @@ function createPasswordToken() {
 
 function createJWTToken(payload) {
   return new Promise((resolve, reject) => {
-    jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' }, (error, token) => {
-      if (error) return reject(error);
+    jwt.sign(
+      payload,
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES },
+      (error, token) => {
+        if (error) return reject(error);
 
-      resolve(token);
-    });
+        resolve(token);
+      },
+    );
   });
 }
 

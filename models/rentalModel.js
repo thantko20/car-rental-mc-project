@@ -10,6 +10,13 @@ const rentalSchema = new Schema({
   totalAmount: { type: Number, required: true },
 });
 
+rentalSchema.pre(/^find/, populateFields);
+
 const RentalModel = mongoose.model('Rental', rentalSchema);
+
+function populateFields(next) {
+  this.populate('lessee', '-password -salt').populate('car');
+  next();
+}
 
 module.exports = RentalModel;

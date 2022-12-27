@@ -22,4 +22,5 @@ module.exports = {
   EMAIL_HOST: process.env.EMAIL_HOST,
   EMAIL_PORT: process.env.EMAIL_PORT,
   JWT_COOKIE_EXPIRES: process.env.JWT_COOKIE_EXPIRES,
+  JWT_EXPIRES: process.env.JWT_EXPIRES || '10d',
 };

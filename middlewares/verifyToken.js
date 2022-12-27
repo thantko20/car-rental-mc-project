@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 const withAsyncCatcher = require('../helpers/withAsyncCatcher');
 const ApiError = require('../helpers/apiError');
 const { JWT_SECRET } = require('../constants');
-const UserModel = require('../models/userModel');
 
 const verifyToken = withAsyncCatcher(async (req, res, next) => {
   const authorization = req.headers['authorization'];
@@ -18,30 +17,22 @@ const verifyToken = withAsyncCatcher(async (req, res, next) => {
   }
 
   const decoded = await jwtVerify(token);
-
-  const user = await UserModel.findById(decoded.userId);
-
-  if (!user) {
-    return next(apiError);
-  }
-
-  const isTokenOlderThanLastPasswordChange =
-    user.changedPasswordAt && decoded.iat * 1000 < user.changedPasswordAt;
-
-  if (isTokenOlderThanLastPasswordChange) {
-    return next(
-      ApiError.notAuthenticated('Session Expired. Please login again.'),
-    );
-  }
-
-  req.user = user;
-  next();
+  req.token = decoded;
+  return next();
 });
 
 function jwtVerify(token) {
   return new Promise((resolve, reject) => {
     jwt.verify(token, JWT_SECRET, (error, decoded) => {
-      if (error) return reject(error);
+      if (error) {
+        if (error.name === 'TokenExpiredError') {
+          return reject(
+            ApiError.notAuthenticated('Login expired. Please log in again.'),
+          );
+        }
+
+        return reject(error);
+      }
 
       resolve(decoded);
     });
