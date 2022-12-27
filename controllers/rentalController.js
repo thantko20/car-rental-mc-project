@@ -6,7 +6,7 @@ const CarModel = require('../models/carModel');
 
 exports.getRentals = withAsyncCatcher(async (req, res, next) => {
   const queryHelper = new QueryHelper(RentalModel.find(), req.query);
-  queryHelper.filter().limitFields().sort();
+  queryHelper.filter().limitFields().sort().paginate();
   const rentals = await queryHelper.query
     .populate('lessee', '-password -salt')
     .populate('car')

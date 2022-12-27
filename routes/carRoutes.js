@@ -11,14 +11,14 @@ const {
 } = require('../middlewares/validation/validateCarCreation');
 const validateCarUpdate = require('../middlewares/validation/validateCarUpdate');
 const uploadImage = require('../middlewares/uploadImage');
-const verifyAdmin = require('../middlewares/verifyAdmin');
+const restrictRoles = require('../middlewares/restrictRoles');
 const multerUpload = require('../helpers/multerUpload');
 
 router
   .route('/')
   .get(getCars)
   .post(
-    verifyAdmin,
+    restrictRoles(['ADMIN']),
     multerUpload.single('car_image'),
     validateCarCreation,
     uploadImage,
@@ -29,12 +29,12 @@ router
   .route('/:id')
   .get(getACar)
   .patch(
-    verifyAdmin,
+    restrictRoles(['ADMIN']),
     multerUpload.single('car_image'),
     validateCarUpdate,
     uploadImage,
     updateCar,
   )
-  .delete(verifyAdmin, deleteCar);
+  .delete(restrictRoles(['ADMIN']), deleteCar);
 
 module.exports = router;

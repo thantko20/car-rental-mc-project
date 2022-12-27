@@ -5,7 +5,6 @@ const withAsyncCatcher = require('../helpers/withAsyncCatcher');
 const ApiError = require('../helpers/apiError');
 const { JWT_SECRET } = require('../constants');
 const UserModel = require('../models/userModel');
-const excludeFields = require('../helpers/excludeFields');
 
 const verifyToken = withAsyncCatcher(async (req, res, next) => {
   const authorization = req.headers['authorization'];
@@ -18,19 +17,36 @@ const verifyToken = withAsyncCatcher(async (req, res, next) => {
     return next(apiError);
   }
 
-  jwt.verify(token, JWT_SECRET, async (error, decoded) => {
-    if (error) return next(apiError);
+  const decoded = await jwtVerify(token);
 
-    const user = await UserModel.findById(decoded.userId);
+  const user = await UserModel.findById(decoded.userId);
 
-    if (!user) {
-      return next(apiError);
-    }
+  if (!user) {
+    return next(apiError);
+  }
 
-    req.user = excludeFields(user, 'password', 'salt');
-    next();
-  });
+  const isTokenOlderThanLastPasswordChange =
+    user.changedPasswordAt && decoded.iat * 1000 < user.changedPasswordAt;
+
+  if (isTokenOlderThanLastPasswordChange) {
+    return next(
+      ApiError.notAuthenticated('Session Expired. Please login again.'),
+    );
+  }
+
+  req.user = user;
+  next();
 });
+
+function jwtVerify(token) {
+  return new Promise((resolve, reject) => {
+    jwt.verify(token, JWT_SECRET, (error, decoded) => {
+      if (error) return reject(error);
+
+      resolve(decoded);
+    });
+  });
+}
 
 function parseToken(string) {
   const token = string.replace('Bearer ', '');

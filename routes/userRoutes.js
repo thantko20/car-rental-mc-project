@@ -4,7 +4,7 @@ const {
   deleteUser,
   getUser,
 } = require('../controllers/userController');
-const verifyAdmin = require('../middlewares/verifyAdmin');
+const restrictRoles = require('../middlewares/restrictRoles');
 const verifyToken = require('../middlewares/verifyToken');
 
 const router = require('express').Router();
@@ -14,6 +14,6 @@ router.route('/').get(verifyToken, sanitizeUserCredentials, getUsers);
 router
   .route('/:id')
   .get(verifyToken, sanitizeUserCredentials, getUser)
-  .delete(verifyAdmin, deleteUser);
+  .delete(restrictRoles(['ADMIN']), deleteUser);
 
 module.exports = router;
