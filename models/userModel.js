@@ -17,21 +17,10 @@ const userSchema = new Schema({
   changedPasswordAt: Date,
 });
 
-<<<<<<< HEAD
-userSchema.pre('validate', async function (next) {
-  // if (this.isModified('password')) next();
-  console.log('Hey');
-
-  const { password, salt } = await genHashAndSalt(
-    this.password,
-    parseInt(SALT_ROUNDS, 10),
-  );
-=======
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) next();
 
   const { password, salt } = await genHashAndSalt(this.password);
->>>>>>> main
   this.password = password;
   this.salt = salt;
   next();
