@@ -1,4 +1,4 @@
-const cloudinary = require('../services/cloudinary');
+const cloudinary = require('../lib/cloudinary');
 
 module.exports = (public_id) => {
   return new Promise((resolve, reject) => {

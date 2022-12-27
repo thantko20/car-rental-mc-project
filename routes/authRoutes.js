@@ -1,17 +1,14 @@
 const router = require('express').Router();
 
-const {
-  login,
-  register,
-  getStatus,
-  forgotPassword,
-  resetPassword,
-} = require('../controllers/authController');
 const verifyToken = require('../middlewares/verifyToken');
 const {
   validateUserRegister,
 } = require('../middlewares/validation/validateUserRegister');
 const validateUserLogin = require('../middlewares/validation/validateUserLogin');
+const container = require('../container');
+
+const { login, register, forgotPassword, getStatus, resetPassword } =
+  container.resolve('authController');
 
 router.post('/login', validateUserLogin, login);
 
