@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI;
 const NODE_ENV = process.env.NODE_ENV || 'development';
@@ -16,4 +17,9 @@ module.exports = {
   CLOUDINARY_API_SECRET,
   SALT_ROUNDS,
   JWT_SECRET,
+  EMAIL_USERNAME: process.env.EMAIL_USERNAME,
+  EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
+  EMAIL_HOST: process.env.EMAIL_HOST,
+  EMAIL_PORT: process.env.EMAIL_PORT,
+  JWT_COOKIE_EXPIRES: process.env.JWT_COOKIE_EXPIRES,
 };
