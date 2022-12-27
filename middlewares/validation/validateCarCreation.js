@@ -6,7 +6,7 @@ const schema = z.object({
   color: z
     .string()
     .trim()
-    .regex(/^[a-zA-Z]*$/, 'Color must be alphabets.'),
+    .regex(/^[a-zA-Z]*$/, 'Color must contain alphabets.'),
   licenseNumber: z
     .string()
     .trim()
