@@ -3,8 +3,14 @@ const sanitizeUserRoutes = require('../middlewares/sanitizeUserRoute');
 const verifyToken = require('../middlewares/verifyToken');
 const container = require('../container');
 
-const { getUsers, deleteUser, getUser, attachUser, updateUser } =
-  container.resolve('userController');
+const {
+  getUsers,
+  deleteUser,
+  getUser,
+  attachUser,
+  updateUser,
+  checkOwnUserIdOrAdmin,
+} = container.resolve('userController');
 
 const router = require('express').Router();
 
@@ -15,7 +21,7 @@ router.route('/').get(verifyToken, attachUser, getUsers);
 router
   .route('/:id')
   .get(verifyToken, attachUser, getUser)
-  .delete(restrictRoles(['ADMIN']), deleteUser)
-  .patch(verifyToken, attachUser, updateUser);
+  .delete(restrictRoles(['ADMIN']), checkOwnUserIdOrAdmin, deleteUser)
+  .patch(verifyToken, attachUser, checkOwnUserIdOrAdmin, updateUser);
 
 module.exports = router;

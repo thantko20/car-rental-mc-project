@@ -25,12 +25,6 @@ module.exports = function makeUserController({ userService }) {
     }),
 
     updateUser: withAsyncCatcher(async (req, res, next) => {
-      const userId = req.params.id;
-
-      if (userId !== req.user.id || req.user.role !== 'ADMIN') {
-        return next(new ApiError('Not authorized.', 403));
-      }
-
       const user = await userService.updateUserById(req.params.id, req.body);
 
       res.json({
@@ -69,5 +63,14 @@ module.exports = function makeUserController({ userService }) {
       req.user = user;
       next();
     }),
+
+    checkOwnUserIdOrAdmin: (req, res, next) => {
+      const userId = req.params.id;
+
+      if (userId !== req.user.id || req.user.role !== 'ADMIN') {
+        return next(new ApiError('Not authorized.', 403));
+      }
+      next();
+    },
   };
 };
