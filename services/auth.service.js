@@ -3,7 +3,6 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 
 const ApiError = require('../helpers/apiError');
-const sendEmail = require('../helpers/emailHandler');
 const { JWT_EXPIRES, JWT_SECRET } = require('../constants');
 const excludeFields = require('../helpers/excludeFields');
 
@@ -80,19 +79,21 @@ module.exports = function makeAuthService({ userModel }) {
 
       const message = `Please visit the link below to reset your passowrd. ${resetUrl}.\nIf you didn't forget your password, just ignore this mail.`;
 
-      try {
-        await sendEmail({
-          email: user.email,
-          subject: 'Password Reset for Car Rental Account.',
-          message,
-        });
-      } catch (error) {
-        await userModel.updateOne(
-          { id: user.id },
-          { passwordResetToken: undefined, passwordResetExpires: undefined },
-        );
-        throw error;
-      }
+      return { message, user };
+
+      // try {
+      //   await sendEmail({
+      //     email: user.email,
+      //     subject: 'Password Reset for Car Rental Account.',
+      //     message,
+      //   });
+      // } catch (error) {
+      //   await userModel.updateOne(
+      //     { id: user.id },
+      //     { passwordResetToken: undefined, passwordResetExpires: undefined },
+      //   );
+      //   throw error;
+      // }
     },
 
     resetPassword: async (password, token) => {
@@ -120,6 +121,13 @@ module.exports = function makeAuthService({ userModel }) {
       user.changedPasswordAt = Date.now() - 1000;
 
       await user.save();
+    },
+
+    forgotPasswordError: async (id) => {
+      await userModel.findByIdAndUpdate(id, {
+        passwordResetToken: undefined,
+        passwordResetExpires: undefined,
+      });
     },
   };
 };

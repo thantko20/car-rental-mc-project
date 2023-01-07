@@ -1,6 +1,7 @@
-const CarModel = require('../../models/carModel');
+const CarModel = require('../../models/carModel')();
 const generateValidator = require('../../helpers/generateValidator');
 const z = require('zod');
+const atLeastOneDefined = require('./atLeastOneDefined');
 
 const schema = z.object({
   color: z
@@ -31,7 +32,7 @@ const schema = z.object({
     invalid_type_error: 'Must be a number',
   }),
 });
-const optionalCarSchema = schema.partial();
+const optionalCarSchema = schema.partial().refine(atLeastOneDefined);
 
 const validateCarCreation = generateValidator(schema);
 

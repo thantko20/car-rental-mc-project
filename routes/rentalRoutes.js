@@ -10,18 +10,18 @@ const {
   validateRentalCreation,
 } = require('../middlewares/validation/validateRentalCreation');
 const validateRentalUpdate = require('../middlewares/validation/validateRentalUpdate');
-const verifyToken = require('../middlewares/verifyToken');
+const authenticate = require('../middlewares/authenticate');
 const restrictRoles = require('../middlewares/restrictRoles');
 const attachUser = require('../middlewares/attachUser');
 
 router
   .route('/')
   .get(getRentals)
-  .post(verifyToken, attachUser, validateRentalCreation, createRental);
+  .post(authenticate, attachUser, validateRentalCreation, createRental);
 router
   .route('/:id')
-  .get(verifyToken, attachUser, getRental)
+  .get(authenticate, attachUser, getRental)
   .delete(restrictRoles(['ADMIN']), deleteRental)
-  .patch(verifyToken, attachUser, validateRentalUpdate, updateRental);
+  .patch(authenticate, attachUser, validateRentalUpdate, updateRental);
 
 module.exports = router;

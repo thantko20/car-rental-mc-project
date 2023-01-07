@@ -24,6 +24,4 @@ const carSchema = new Schema({
   rentals: [{ type: Schema.Types.ObjectId, ref: 'Rental' }],
 });
 
-const CarModel = mongoose.model('Car', carSchema);
-
-module.exports = CarModel;
+module.exports = () => mongoose.model('Car', carSchema);

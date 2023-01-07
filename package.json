@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "awilix": "^8.0.0",
+    "awilix-express": "^8.0.0",
     "bcrypt": "^5.1.0",
     "cloudinary": "^1.33.0",
     "cors": "^2.8.5",

@@ -1,23 +1,22 @@
-const router = require('express').Router();
+const { createController } = require('awilix-express');
 
-const verifyToken = require('../middlewares/verifyToken');
+const authenticate = require('../middlewares/authenticate');
 const {
   validateUserRegister,
 } = require('../middlewares/validation/validateUserRegister');
 const validateUserLogin = require('../middlewares/validation/validateUserLogin');
-const container = require('../container');
+const authController = require('../controllers/auth.controller');
 
-const { login, register, forgotPassword, getStatus, resetPassword } =
-  container.resolve('authController');
-
-router.post('/login', validateUserLogin, login);
-
-router.post('/register', validateUserRegister, register);
-
-router.post('/status', verifyToken, getStatus);
-
-router.post('/forgot-password', forgotPassword);
-
-router.patch('/reset-password/:token', resetPassword);
-
-module.exports = router;
+module.exports = createController(authController)
+  .prefix('/auth')
+  .post('/login', 'login', {
+    before: [validateUserLogin],
+  })
+  .post('/register', 'register', {
+    before: [validateUserRegister],
+  })
+  .post('/status', 'getStatus', {
+    before: [authenticate],
+  })
+  .post('/forgot-password', 'forgotPassword')
+  .patch('/reset-password/:token', 'resetPassword');

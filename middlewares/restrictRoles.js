@@ -1,5 +1,5 @@
 const ApiError = require('../helpers/apiError');
-const verifyToken = require('./verifyToken');
+const verifyToken = require('./authenticate');
 const attachUser = require('./attachUser');
 
 const restrictRoles = (roles) => {

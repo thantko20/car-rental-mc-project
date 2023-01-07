@@ -10,10 +10,8 @@ const xss = require('xss-clean');
 const { NODE_ENV } = require('./constants');
 const ApiError = require('./helpers/apiError');
 const errorHandler = require('./middlewares/errorHandler');
-const carRoutes = require('./routes/carRoutes');
-const authRoutes = require('./routes/auth.routes');
-const userRoutes = require('./routes/user.routes');
-const rentalRoutes = require('./routes/rentalRoutes');
+const { scopePerRequest, loadControllers } = require('awilix-express');
+const container = require('./container');
 
 const app = express();
 
@@ -43,14 +41,10 @@ app.use(mongoSanitize());
 
 // Data sanitization against XSS
 app.use(xss());
-
-// eslint-disable-next-line no-undef
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api/v1/cars', carRoutes);
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/users', userRoutes);
-app.use('/api/v1/rentals', rentalRoutes);
+app.use(scopePerRequest(container));
+app.use('/api/v1', loadControllers('routes/*.routes.js', { cwd: __dirname }));
 
 app.all('*', (req, res, next) => {
   const error = ApiError.notFound(`Invalid endpoint: ${req.originalUrl}`);

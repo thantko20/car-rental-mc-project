@@ -2,7 +2,7 @@ const withAsyncCatcher = require('../helpers/withAsyncCatcher');
 const { NODE_ENV, JWT_COOKIE_EXPIRES } = require('../constants');
 const ApiError = require('../helpers/apiError');
 
-module.exports = function makeAuthController({ authService }) {
+module.exports = function makeAuthController({ authService, mailService }) {
   const sendAuthToken = (payload, token, res) => {
     const cookieOptions = {
       expires: new Date(Date.now() + JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000),
@@ -37,7 +37,20 @@ module.exports = function makeAuthController({ authService }) {
     }),
 
     forgotPassword: withAsyncCatcher(async (req, res, next) => {
-      await authService.forgotPassword({ email: req.body.email, req });
+      const { user, message } = await authService.forgotPassword({
+        email: req.body.email,
+        req,
+      });
+      try {
+        await mailService.sendEmail({
+          email: user.email,
+          message,
+          subject: 'Passowrd Reset for Car Rental Account.',
+        });
+      } catch (error) {
+        await authService.forgotPasswordError(user.id);
+        return next(error);
+      }
 
       res.status(204).end();
     }),
